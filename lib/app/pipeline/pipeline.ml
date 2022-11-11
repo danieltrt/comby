@@ -64,7 +64,7 @@ let process_single_source
         Some path, In_channel.read_all path
     in
     let matches =
-      with_timeout timeout source ~f:(fun () ->
+      with_timeout (timeout + 60) source ~f:(fun () ->
         timed_run
           matcher
           ~fast_offset_conversion

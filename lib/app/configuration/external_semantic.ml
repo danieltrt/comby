@@ -33,8 +33,8 @@ let lsif_hover ~name:_ ~filepath ~line ~column =
     |> fun filepath_relative_root ->
     if debug then Format.printf "File relative root: %s@." filepath;
     if debug then Format.printf "Querying type at %d::%d@." line column;
-    let context = Lsif.Context.{ repository; lsif_endpoint; revision; formatting = Markdown } in
-    Lsif.hover_at context ~filepath:filepath_relative_root ~line ~column
+    let res = Mytest.infer_var_type (Sys.getcwd()) filepath_relative_root line column in
+    res
   with
   | exn ->
     Format.eprintf
