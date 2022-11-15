@@ -48,6 +48,7 @@ let json_rpc_req_format = "Content-Length: {json_string_len}\r\n\r\n{json_string
 let json_rpc_res_regex = "Content-Length: \\([0-9]*\\)\r"
 let result_regex = "Name full_name='\\([a-zA-Z0-9_.]*\\)'"
 
+
 let add_key_v dict key v = 
     match dict with
     | `Assoc lst -> `Assoc (lst @ [(key, v)])
@@ -95,19 +96,30 @@ let initialize pin pout rootUri options capabilities =
     send_to_lsp pin pout (format_message msg)
 
 
+let procs = ref None
 
 let infer_var_type src_uri filepath l c = 
-
+    
     (*let _ = print_endline "testing" in
     let _ = print_endline (string_of_int (l+1)) in
     let _ = print_endline (string_of_int (c-1)) in*)
 
-    let (pin, pout) : in_channel * out_channel = Unix.open_process "jedi-language-server" in 
-    let options :Yojson.Basic.t = Yojson.Basic.from_file "./_build/default/src/tmp/opt.json" in 
-    let capabilities :Yojson.Basic.t = Yojson.Basic.from_file "./_build/default/src/tmp/cap.json" in 
+    let get_procs ps = 
+        match !ps with 
+        | Some(pin,pout) ->
+            pin, pout
+        | None -> begin
+            let (pin, pout) : in_channel * out_channel = Unix.open_process "jedi-language-server" in 
+            let options :Yojson.Basic.t = Yojson.Basic.from_file "./_build/default/src/tmp/opt.json" in 
+            let capabilities :Yojson.Basic.t = Yojson.Basic.from_file "./_build/default/src/tmp/cap.json" in 
 
-    let _ = initialize pin pout src_uri options capabilities in 
+            let _ = initialize pin pout src_uri options capabilities in 
+            procs := ( Some(pin,pout) );
+            pin, pout
+        end
+    in 
 
+    let pin, pout = get_procs procs in
     let doc_id : textDocumentIdentifier =  {uri = filepath; languageId = "python"} in 
     let position : position = {line = l+1; character = c} in 
     let params = `Assoc [("textDocument", textDocumentIdentifier_to_json doc_id); 
@@ -116,7 +128,6 @@ let infer_var_type src_uri filepath l c =
     let request = send_message "textDocument/hover" 1 params in 
 
     let response = (send_to_lsp pin pout (format_message request)) in
-    let _ = Unix.close_process (pin, pout) in
     let json_res = Yojson.Basic.from_string response in
     let result = json_res |> Yojson.Basic.Util.member "result" in 
     if result != `Null then
@@ -128,4 +139,3 @@ let infer_var_type src_uri filepath l c =
         Some ret_val
     else
         None
-
