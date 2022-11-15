@@ -102,14 +102,14 @@ let infer_var_type src_uri filepath l c =
     let _ = print_endline (string_of_int (l+1)) in
     let _ = print_endline (string_of_int (c-1)) in*)
 
-    let (pin, pout) : in_channel * out_channel = Unix.open_process "/Users/drramos/Documents/CombyInferPy/venv/bin/jedi-language-server" in 
-    let options :Yojson.Basic.t = Yojson.Basic.from_file "/Users/drramos/Documents/comby/_build/default/src/tmp/opt.json" in 
-    let capabilities :Yojson.Basic.t = Yojson.Basic.from_file "/Users/drramos/Documents/comby/_build/default/src/tmp/cap.json" in 
+    let (pin, pout) : in_channel * out_channel = Unix.open_process "jedi-language-server" in 
+    let options :Yojson.Basic.t = Yojson.Basic.from_file "./_build/default/src/tmp/opt.json" in 
+    let capabilities :Yojson.Basic.t = Yojson.Basic.from_file "./_build/default/src/tmp/cap.json" in 
 
     let _ = initialize pin pout src_uri options capabilities in 
 
     let doc_id : textDocumentIdentifier =  {uri = filepath; languageId = "python"} in 
-    let position : position = {line = l+1; character = c-1} in 
+    let position : position = {line = l+1; character = c} in 
     let params = `Assoc [("textDocument", textDocumentIdentifier_to_json doc_id); 
                         ("position", position_to_json position); 
                         ("context", `Assoc [("includeDeclaration", `Bool true)])] in 

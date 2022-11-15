@@ -74,7 +74,7 @@
     "markupKindPreferred": "markdown",
     "workspace": {
         "extraPaths": [],
-        "environmentPath": "/Users/drramos/Documents/CombyInferPy/venv/bin/python3",
+        "environmentPath": "/Users/drramos/opt/anaconda3/envs/FSE23/bin/python3",
         "symbols": {
             "ignoreFolders": [
                 ".nox",
