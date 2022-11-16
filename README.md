@@ -39,6 +39,11 @@ export JEDI_LANGUAGE_SERVER_OPTIONS=./jedi-language-server/opt.json
 export JEDI_LANGUAGE_SERVER_CAPABILITIES=./jedi-language-server/cap.json
 ```
 
+ - To use type information during template matching use the keyword `where :[x].lsif.hover == type`. For example:
+
+```
+comby ":[x] = :[y]" ":[x] : str = :[y]" /Users/drramos/Documents/CombyInferPy/src/jedi_lsp/test.py -rule "where :[x].lsif.hover == builtins.str"
+```
 ---
 
 ### See the [usage documentation](https://comby.dev).
