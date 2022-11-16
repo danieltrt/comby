@@ -48,6 +48,17 @@ let json_rpc_req_format = "Content-Length: {json_string_len}\r\n\r\n{json_string
 let json_rpc_res_regex = "Content-Length: \\([0-9]*\\)\r"
 let result_regex = "Name full_name='\\([a-zA-Z0-9_.]*\\)'"
 
+let language_server_path = match (Sys.getenv "JEDI_LANGUAGE_SERVER_PATH") with
+    | None -> "/Users/drramos/Library/Caches/pypoetry/virtualenvs/jedi-language-server-NRMF7l2B-py3.10/bin/jedi-language-server"
+    | Some path -> path
+
+let language_server_options = match (Sys.getenv "JEDI_LANGUAGE_SERVER_OPTIONS") with
+    | None -> "/Users/drramos/Documents/comby/jedi-language-server/opt.json"
+    | Some options -> options
+
+let language_server_capabilities = match (Sys.getenv "JEDI_LANGUAGE_SERVER_CAPABILITIES") with
+    | None -> "/Users/drramos/Documents/comby/jedi-language-server/cap.json"
+    | Some capabilities -> capabilities
 
 let add_key_v dict key v = 
     match dict with
@@ -109,9 +120,9 @@ let infer_var_type src_uri filepath l c =
         | Some(pin,pout) ->
             pin, pout
         | None -> begin
-            let (pin, pout) : in_channel * out_channel = Unix.open_process "jedi-language-server" in 
-            let options :Yojson.Basic.t = Yojson.Basic.from_file "./_build/default/src/tmp/opt.json" in 
-            let capabilities :Yojson.Basic.t = Yojson.Basic.from_file "./_build/default/src/tmp/cap.json" in 
+            let (pin, pout) : in_channel * out_channel = Unix.open_process language_server_path  in 
+            let options :Yojson.Basic.t = Yojson.Basic.from_file language_server_options in 
+            let capabilities :Yojson.Basic.t = Yojson.Basic.from_file language_server_capabilities in 
 
             let _ = initialize pin pout src_uri options capabilities in 
             procs := ( Some(pin,pout) );
