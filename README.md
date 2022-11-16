@@ -1,4 +1,7 @@
-# comby
+
+# comby-typed
+
+An extension of comby to constraint template matching to certain types using a language server protocol.
 
 [![Apache-2.0](https://img.shields.io/badge/license-Apache-blue.svg)](LICENSE)
 [![Build Status](https://travis-ci.com/comby-tools/comby.svg?branch=master)](https://travis-ci.com/comby-tools/comby)
@@ -8,6 +11,35 @@
 [![Gitter](https://img.shields.io/gitter/room/comby-tools/comby.svg?color=teal)](https://gitter.im/comby-tools/community)
 
 ![](https://user-images.githubusercontent.com/888624/64916761-0b657780-d752-11e9-96e2-cd81a2681139.gif)
+
+
+## Using a language server to infer types
+
+- Build comby as explained in the "**Build from source**" section below.
+
+- Install the custom version of jedi-language-server provided under `./jedi-language-server/jedi_language_server-0.38.0-py3-none-any.whl`to query about python types:
+
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install ./jedi-language-server/jedi_language_server-0.38.0-py3-none-any.whl
+```
+
+- Edit `environmentPath` in the json file containing jedi's configuration options (sample provided in`./jedi-language-server/opt.json`) to the python environment that your project is using:
+
+```
+"environmentPath": "/Users/drramos/opt/anaconda3/envs/comby-jedi/bin/python3"
+```
+ 
+ - Set the environment variables with the paths and configuration options of the language server:
+
+```
+export JEDI_LANGUAGE_SERVER_PATH=./venv/bin/jedi-language-server
+export JEDI_LANGUAGE_SERVER_OPTIONS=./jedi-language-server/opt.json
+export JEDI_LANGUAGE_SERVER_CAPABILITIES=./jedi-language-server/cap.json
+```
+
+---
 
 ### See the [usage documentation](https://comby.dev).
 [A short example below](https://github.com/comby-tools/comby#isnt-a-regex-approach-like-sed-good-enough) shows how comby simplifies matching and rewriting compared to regex approaches like `sed`.
