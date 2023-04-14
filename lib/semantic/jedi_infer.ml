@@ -109,6 +109,13 @@ let initialize pin pout rootUri options capabilities =
 
 let procs = ref None
 
+let terminate_subprocess () =
+    match !procs with
+    | Some (pin, pout) ->
+        let _ = Unix.close_process (pin, pout) in
+        procs := None
+    | None -> ()
+
 let infer_var_type src_uri filepath l c = 
     
     (*let _ = print_endline "testing" in
@@ -123,7 +130,7 @@ let infer_var_type src_uri filepath l c =
             let (pin, pout) : in_channel * out_channel = Unix.open_process language_server_path  in 
             let options :Yojson.Basic.t = Yojson.Basic.from_file language_server_options in 
             let capabilities :Yojson.Basic.t = Yojson.Basic.from_file language_server_capabilities in 
-
+            let () = at_exit terminate_subprocess in 
             let _ = initialize pin pout src_uri options capabilities in 
             procs := ( Some(pin,pout) );
             pin, pout

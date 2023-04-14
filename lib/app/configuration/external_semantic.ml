@@ -5,6 +5,12 @@ let debug =
   | exception Not_found -> false
   | _ -> true
 
+let debug_types =
+  match Sys.getenv "DEBUG_COMBY_TYPE" with
+  | exception Not_found -> false
+  | _ -> true
+
+
 let lsif_endpoint =
   match Sys.getenv "LSIF_SERVER" with
   | exception Not_found -> "https://sourcegraph.com/.api/graphql"
@@ -33,7 +39,8 @@ let lsif_hover ~name:_ ~filepath ~line ~column =
     |> fun filepath_relative_root ->
     if debug then Format.printf "File relative root: %s@." filepath;
     if debug then Format.printf "Querying type at %d::%d@." line column;
-    let res = Jedi_infer.infer_var_type (Sys.getcwd()) filepath_relative_root line column in
+    if debug_types then Format.printf "File relative root: %s@." filepath_relative_root;
+    let res = Jedi_infer.infer_var_type (Sys.getcwd()) filepath line column in
     res
   with
   | exn ->
